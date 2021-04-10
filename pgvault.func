@@ -395,6 +395,8 @@ EOF
 bdrive(){
 config="/opt/appdata/plexguide/rclone.conf"
 showdrives=$(rclone listremotes --config=${config} | grep "$filter" | sed -e 's/://g' | sed '/GDSA/d' | sed '/pgunion/d' | sort -r)
+backupdrive=$(cat /var/plexguide/backupdrive.pgvault)
+
 tee <<-EOF
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🚀 Backup and Restore Google Drive Setting
@@ -421,9 +423,16 @@ Google Backup Drive is set to : $typed
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
 
-  echo $typed >/var/plexguide/backupdrive.pgvault
-    read -p '🌎 Acknowledge Info | Press [ENTER] ' typed </dev/tty
-  primaryinterface
+    read -erp '🌎 Type Your Backup Drive here | Press [ENTER] ' typed </dev/tty
+    if [[ ${typed} == "" ]];then bdrive;fi
+        check=$(rclone listremotes --config=${config} | grep "$filter" | sed -e 's/://g' | sed '/GDSA/d' | sed '/pgunion/d' | sort -r | grep -x ${typed})
+    if [[ ${typed} == ${check} ]];then echo ${typed} >/var/plexguide/backupdrive.pgvault
+    if [[ -f ${backupdrive} ]];then
+        read -erp '🌎 Backup Drive set to ${typed} | Press [ENTER] ' typed </dev/tty
+        primaryinterface
+    else
+        bdrive
+    fi
   fi
   #case $typed in
   #1) echo "gdrive" >/var/plexguide/backupdrive.pgvault && primaryinterface ;;
