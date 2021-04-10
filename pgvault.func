@@ -235,7 +235,7 @@ EOF
 EOF
 
 useragent=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-backupdrive="$(cat /var/plexguide/backupdrive.pgvault)"
+backupdrive=$(cat /var/plexguide/backupdrive.pgvault)
 
   rclone --config /opt/appdata/plexguide/rclone.conf mkdir ${backupdrive}:/plexguide/backup/${server_id} 1>/dev/null 2>&1
   rclone moveto ${tarlocation}/${program_var}.tar \
@@ -294,7 +294,7 @@ EOF
 restore_process() {
   initial2
   srecall=$(cat /tmp/server.select)
-  backupdrive="$(cat /var/plexguide/backupdrive.pgvault)"
+  backupdrive=$(cat /var/plexguide/backupdrive.pgvault)
   tee <<-EOF
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ↘️  Determining Initial File Size - $program_var
