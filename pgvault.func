@@ -340,6 +340,7 @@ EOF
      tar -C /opt/appdata/${program_var} -xf ${tarlocation}/${program_var}.tar
      chown -R 1000:1000 "/opt/appdata/${program_var}"
      chmod -R 775 "/opt/appdata/${program_var}"
+     if [[ -f "${tarlocation}/${program_var}.tar" ]];then rm -f ${tarlocation}/${program_var}.tar;fi
   fi
   ##rebuild app after restore
   if [[ -e "/opt/coreapps/apps/$program_var.yml" ]]; then ansible-playbook /opt/coreapps/apps/$program_var.yml; fi
