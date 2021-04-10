@@ -311,10 +311,8 @@ EOF
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
   rclone --config /opt/appdata/plexguide/rclone.conf --stats-one-line \
-    --stats 1s --progress \
-	copy ${backupdrive}:/plexguide/backup/${srecall}/${program_var}.tar \
-    ${tarlocation} \
-    -v --checksum --drive-chunk-size=64M --transfers=1
+    --stats 1s --progress copy ${backupdrive}:/plexguide/backup/${srecall}/${program_var}.tar ${tarlocation}/${program_var}.tar \
+    -v --checksum --drive-chunk-size=64M --transfers=8
 
   ##### Stop Docker Container if Running
   runningcheck
@@ -333,9 +331,16 @@ EOF
 ↘️  UnZipping & Restoring Data - $program_var
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
-  tar -C /opt/appdata/${program_var} -xvf ${tarlocation}/${program_var}.tar
-  chown -R 1000:1000 "/opt/appdata/${program_var}"
-  chmod -R 775 "/opt/appdata/${program_var}"
+
+  if [[ ! -d "/opt/appdata/${program_var}" ]];then mkdir -p /opt/appdata/${program_var};fi
+  if [[ -f "/opt/appdata/${program_var}/*" ]];then rm -rf "/opt/appdata/${program_var}/*";fi
+  if [ -d "/opt/appdata/${program_var}" ] && [ -f "${tarlocation}/${program_var}.tar" ];then
+     chown -R 1000:1000 "/opt/appdata/${program_var}"
+     chmod -R 775 "/opt/appdata/${program_var}"
+     tar -C /opt/appdata/${program_var} -xf ${tarlocation}/${program_var}.tar
+     chown -R 1000:1000 "/opt/appdata/${program_var}"
+     chmod -R 775 "/opt/appdata/${program_var}"
+  fi
   ##rebuild app after restore
   if [[ -e "/opt/coreapps/apps/$program_var.yml" ]]; then ansible-playbook /opt/coreapps/apps/$program_var.yml; fi
   if [[ -e "/opt/communityapps/$program_var.yml" ]]; then ansible-playbook /opt/communityapps/apps/$program_var.yml; fi
