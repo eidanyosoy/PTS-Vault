@@ -25,7 +25,7 @@ clone
 }
 function clone() {
     sudo rm -rf /opt/pgvault
-    sudo git clone --quiet https://github.com/doob187/PGVault.git /opt/pgvault
+    sudo git clone --quiet https://github.com/mrfret/PGVault.git /opt/pgvault
     rm -rf /opt/plexguide/menu/pgvault/pgvault.sh
     mv /opt/pgvault/newpgvault.sh /opt/plexguide/menu/pgcloner/pgvault.sh
     sudo chown -cR 1000:1000 /opt/pgvault/ 1>/dev/null 2>&1
